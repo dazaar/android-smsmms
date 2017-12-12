@@ -16,8 +16,7 @@
 
 package com.google.android.mms.pdu_alt;
 
-import android.net.Uri;
-
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -111,7 +110,7 @@ public class PduPart {
      /**
       * Data uri.
       */
-     private Uri mUri = null;
+     private URL mUri = null;
 
      /**
       * Part data.
@@ -173,7 +172,7 @@ public class PduPart {
       *
       * @param uri the uri
       */
-     public void setDataUri(Uri uri) {
+     public void setDataUri(URL uri) {
          mUri = uri;
      }
 
@@ -182,7 +181,7 @@ public class PduPart {
       *         the data is stored as byte array.
       * @see #getData
       */
-     public Uri getDataUri() {
+     public URL getDataUri() {
          return mUri;
      }
 

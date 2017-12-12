@@ -21,8 +21,6 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.smil.SMILLayoutElement;
 import org.w3c.dom.smil.SMILRootLayoutElement;
 
-import com.android.mms.layout.LayoutManager;
-
 public class SmilLayoutElementImpl extends SmilElementImpl implements
         SMILLayoutElement {
     SmilLayoutElementImpl(SmilDocumentImpl owner, String tagName) {
@@ -54,8 +52,8 @@ public class SmilLayoutElementImpl extends SmilElementImpl implements
         if (null == rootLayoutNode) {
             // root-layout node is not set. Create a default one.
             rootLayoutNode = (SMILRootLayoutElement) getOwnerDocument().createElement("root-layout");
-            rootLayoutNode.setWidth(LayoutManager.getInstance().getLayoutParameters().getWidth());
-            rootLayoutNode.setHeight(LayoutManager.getInstance().getLayoutParameters().getHeight());
+            rootLayoutNode.setWidth(640);
+            rootLayoutNode.setHeight(480);
             appendChild(rootLayoutNode);
         }
         return rootLayoutNode;

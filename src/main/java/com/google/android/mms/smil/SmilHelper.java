@@ -1,23 +1,24 @@
 package com.google.android.mms.smil;
 
-import com.klinker.android.logger.Log;
 import com.android.mms.dom.smil.SmilDocumentImpl;
 import com.google.android.mms.ContentType;
 import com.google.android.mms.pdu_alt.PduBody;
 import com.google.android.mms.pdu_alt.PduPart;
 import org.w3c.dom.smil.*;
 
+import java.util.logging.Logger;
+
 
 public class SmilHelper {
-
     public static final String ELEMENT_TAG_TEXT = "text";
     public static final String ELEMENT_TAG_IMAGE = "img";
     public static final String ELEMENT_TAG_AUDIO = "audio";
     public static final String ELEMENT_TAG_VIDEO = "video";
     public static final String ELEMENT_TAG_VCARD = "vcard";
 
-    public static SMILDocument createSmilDocument(PduBody pb) {
+    private static final Logger log = Logger.getLogger(SmilHelper.class.getName());
 
+    public static SMILDocument createSmilDocument(PduBody pb) {
         SMILDocument document = new SmilDocumentImpl();
 
         // Create root element.
@@ -84,7 +85,7 @@ public class SmilHelper {
                 par.appendChild(textElement);
                 hasMedia = true;
             } else {
-                Log.e("creating_smil_document", "unknown mimetype");
+                log.warning("creating_smil_document - unknown mimetype");
             }
         }
 

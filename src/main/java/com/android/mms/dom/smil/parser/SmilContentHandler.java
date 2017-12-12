@@ -22,15 +22,12 @@ import org.w3c.dom.smil.SMILDocument;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.klinker.android.logger.Log;
-
-import com.android.mms.logs.LogTag;
 import com.android.mms.dom.smil.SmilDocumentImpl;
 
+import java.util.logging.Logger;
+
 public class SmilContentHandler extends DefaultHandler {
-    private static final String TAG = LogTag.TAG;
-    private static final boolean DEBUG = false;
-    private static final boolean LOCAL_LOGV = false;
+    private static final Logger log = Logger.getLogger(SmilContentHandler.class.getName());
 
     private SMILDocument mSmilDocument;
     private Node mCurrentNode;
@@ -54,24 +51,19 @@ public class SmilContentHandler extends DefaultHandler {
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) {
-        if (LOCAL_LOGV) {
-            Log.v(TAG, "SmilContentHandler.startElement. Creating element " + localName);
-        }
+        log.fine("SmilContentHandler.startElement. Creating element " + localName);
+
         Element element = mSmilDocument.createElement(localName);
         if (attributes != null) {
             for (int i = 0; i < attributes.getLength(); i++) {
-                if (LOCAL_LOGV) {
-                    Log.v(TAG, "Attribute " + i +
-                        " lname = " + attributes.getLocalName(i) +
+                    log.fine("Attribute " + i + " lname = " + attributes.getLocalName(i) +
                         " value = " + attributes.getValue(i));
-                }
                 element.setAttribute(attributes.getLocalName(i),
                         attributes.getValue(i));
             }
         }
-        if (LOCAL_LOGV) {
-            Log.v(TAG, "Appending " + localName + " to " + mCurrentNode.getNodeName());
-        }
+
+        log.fine("Appending " + localName + " to " + mCurrentNode.getNodeName());
         mCurrentNode.appendChild(element);
 
         mCurrentNode = element;
@@ -79,16 +71,12 @@ public class SmilContentHandler extends DefaultHandler {
 
     @Override
     public void endElement(String uri, String localName, String qName) {
-        if (LOCAL_LOGV) {
-            Log.v(TAG, "SmilContentHandler.endElement. localName " + localName);
-        }
+        log.fine("SmilContentHandler.endElement. localName " + localName);
         mCurrentNode = mCurrentNode.getParentNode();
     }
 
     @Override
     public void characters(char[] ch, int start, int length) {
-        if (LOCAL_LOGV) {
-            Log.v(TAG, "SmilContentHandler.characters. ch = " + new String(ch, start, length));
-        }
+        log.fine("SmilContentHandler.characters. ch = " + new String(ch, start, length));
     }
 }

@@ -16,20 +16,18 @@
 
 package com.google.android.mms.pdu_alt;
 
-import com.klinker.android.logger.Log;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Encoded-string-value = Text-string | Value-length Char-set Text-string
  */
 public class EncodedStringValue implements Cloneable {
-    private static final String TAG = "EncodedStringValue";
-    private static final boolean DEBUG = false;
-    private static final boolean LOCAL_LOGV = false;
+    private static final Logger log = Logger.getLogger(EncodedStringValue.class.getName());
 
     /**
      * The Char-set value.
@@ -74,7 +72,7 @@ public class EncodedStringValue implements Cloneable {
             mData = data.getBytes(CharacterSets.DEFAULT_CHARSET_NAME);
             mCharacterSet = CharacterSets.DEFAULT_CHARSET;
         } catch (UnsupportedEncodingException e) {
-            Log.e(TAG, "Default encoding must be supported.", e);
+            log.log(Level.SEVERE, "Default encoding must be supported.", e);
         }
     }
 
@@ -139,9 +137,8 @@ public class EncodedStringValue implements Cloneable {
                 String name = CharacterSets.getMimeName(mCharacterSet);
                 return new String(mData, name);
             } catch (UnsupportedEncodingException e) {
-            	if (LOCAL_LOGV) {
-            		Log.v(TAG, e.getMessage(), e);
-            	}
+                log.log(Level.WARNING, "Unknown encoding", e);
+
             	try {
                     return new String(mData, CharacterSets.MIMENAME_ISO_8859_1);
                 } catch (UnsupportedEncodingException f) {
@@ -172,7 +169,7 @@ public class EncodedStringValue implements Cloneable {
                 newTextString.write(mData);
                 newTextString.write(textString);
             } catch (IOException e) {
-                Log.e(TAG, "logging error", e);
+                log.log(Level.SEVERE, "logging error", e);
                 e.printStackTrace();
                 throw new NullPointerException(
                         "appendTextString: failed when write a new Text-string");
@@ -196,7 +193,7 @@ public class EncodedStringValue implements Cloneable {
         try {
             return new EncodedStringValue(mCharacterSet, dstBytes);
         } catch (Exception e) {
-            Log.e(TAG, "logging error", e);
+            log.log(Level.SEVERE, "logging error", e);
             e.printStackTrace();
             throw new CloneNotSupportedException(e.getMessage());
         }

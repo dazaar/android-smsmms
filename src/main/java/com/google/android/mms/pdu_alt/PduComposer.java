@@ -16,17 +16,14 @@
 
 package com.google.android.mms.pdu_alt;
 
-import android.content.ContentResolver;
-import android.content.Context;
-import android.text.TextUtils;
-import com.klinker.android.logger.Log;
-
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PduComposer {
     /**
@@ -80,17 +77,18 @@ public class PduComposer {
      * Block size when read data from InputStream.
      */
     static private final int PDU_COMPOSER_BLOCK_SIZE = 1024;
-    private static final String TAG = "PduComposer";
+
+    static private final Logger log = Logger.getLogger(PduComposer.class.getName());
 
     /**
      * The output message.
      */
-    protected ByteArrayOutputStream mMessage = null;
+    protected ByteArrayOutputStream mMessage;
 
     /**
      * The PDU.
      */
-    private GenericPdu mPdu = null;
+    private GenericPdu mPdu;
 
     /**
      * Current visiting position of the mMessage.
@@ -100,25 +98,20 @@ public class PduComposer {
     /**
      * Message compose buffer stack.
      */
-    private BufferStack mStack = null;
-
-    /**
-     * Content resolver.
-     */
-    private final ContentResolver mResolver;
+    private BufferStack mStack;
 
     /**
      * Header of this pdu.
      */
-    private PduHeaders mPduHeader = null;
+    private PduHeaders mPduHeader;
 
     /**
      * Map of all content type
      */
-    private static HashMap<String, Integer> mContentTypeMap = null;
+    private static HashMap<String, Integer> mContentTypeMap;
 
     static {
-        mContentTypeMap = new HashMap<String, Integer>();
+        mContentTypeMap = new HashMap<>();
 
         int i;
         for (i = 0; i < PduContentTypes.contentTypes.length; i++) {
@@ -129,12 +122,10 @@ public class PduComposer {
     /**
      * Constructor.
      *
-     * @param context the context
      * @param pdu the pdu to be composed
      */
-    public PduComposer(Context context, GenericPdu pdu) {
+    public PduComposer(GenericPdu pdu) {
         mPdu = pdu;
-        mResolver = context.getContentResolver();
         mPduHeader = pdu.getPduHeaders();
         mStack = new BufferStack();
         mMessage = new ByteArrayOutputStream();
@@ -530,7 +521,8 @@ public class PduComposer {
 
                 EncodedStringValue from = mPduHeader.getEncodedStringValue(field);
                 if ((from == null)
-                        || TextUtils.isEmpty(from.getString())
+                        || from.getString() == null
+                        || from.getString().isEmpty()
                         || new String(from.getTextString()).equals(
                                 PduHeaders.FROM_INSERT_ADDRESS_TOKEN_STR)) {
                     // Length of from = 1
@@ -884,10 +876,8 @@ public class PduComposer {
             // content-type parameter: type
             appendOctet(PduPart.P_CT_MR_TYPE);
             appendTextString(part.getContentType());
-        }
-        catch (ArrayIndexOutOfBoundsException e){
-            Log.e(TAG, "logging error", e);
-            e.printStackTrace();
+        } catch (ArrayIndexOutOfBoundsException e){
+            log.log(Level.SEVERE, "Unable to find expected body part", e);
         }
 
         int ctLength = ctStart.getLength();
@@ -989,7 +979,8 @@ public class PduComposer {
                 InputStream cr = null;
                 try {
                     byte[] buffer = new byte[PDU_COMPOSER_BLOCK_SIZE];
-                    cr = mResolver.openInputStream(part.getDataUri());
+                    // TODO: Get input stream for content?
+                    //cr = mResolver.openInputStream(part.getDataUri());
                     int len = 0;
                     while ((len = cr.read(buffer)) != -1) {
                         mMessage.write(buffer, 0, len);

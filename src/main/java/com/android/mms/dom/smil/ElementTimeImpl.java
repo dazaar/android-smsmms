@@ -16,9 +16,9 @@
 
 package com.android.mms.dom.smil;
 
-import com.android.mms.logs.LogTag;
-
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.w3c.dom.DOMException;
 import org.w3c.dom.smil.ElementTime;
@@ -26,11 +26,7 @@ import org.w3c.dom.smil.SMILElement;
 import org.w3c.dom.smil.Time;
 import org.w3c.dom.smil.TimeList;
 
-import com.klinker.android.logger.Log;
-
 public abstract class ElementTimeImpl implements ElementTime {
-    private static final String TAG = LogTag.TAG;
-
     private static final String FILL_REMOVE_ATTRIBUTE = "remove";
     private static final String FILL_FREEZE_ATTRIBUTE = "freeze";
     private static final String FILL_HOLD_ATTRIBUTE = "hold";
@@ -38,6 +34,8 @@ public abstract class ElementTimeImpl implements ElementTime {
     private static final String FILL_AUTO_ATTRIBUTE   = "auto";
     private static final String FILL_ATTRIBUTE_NAME   = "fill";
     private static final String FILLDEFAULT_ATTRIBUTE_NAME   = "fillDefault";
+
+    private static final Logger log = Logger.getLogger(ElementTimeImpl.class.getName());
 
     final SMILElement mSmilElement;
 
@@ -133,7 +131,7 @@ public abstract class ElementTimeImpl implements ElementTime {
                             getEndConstraints()));
                 } catch (IllegalArgumentException e) {
                     // Ignore badly formatted times
-                    Log.e(TAG, "Malformed time value.", e);
+                    log.log(Level.SEVERE, "Malformed time value.", e);
                 }
             }
         }

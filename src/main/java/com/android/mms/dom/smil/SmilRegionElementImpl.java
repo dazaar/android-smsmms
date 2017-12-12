@@ -16,16 +16,15 @@
 
 package com.android.mms.dom.smil;
 
-import com.android.mms.logs.LogTag;
-
 import org.w3c.dom.DOMException;
 import org.w3c.dom.smil.SMILDocument;
 import org.w3c.dom.smil.SMILRegionElement;
 
-import com.klinker.android.logger.Log;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class SmilRegionElementImpl extends SmilElementImpl implements
-        SMILRegionElement {
+public class SmilRegionElementImpl extends SmilElementImpl implements SMILRegionElement {
+    private static final Logger log = Logger.getLogger(SmilRegionElementImpl.class.getName());
 
     /*
      * Internal Interface
@@ -47,9 +46,6 @@ public class SmilRegionElementImpl extends SmilElementImpl implements
     private static final String RIGHT_ATTRIBUTE_NAME = "right";
     private static final String BOTTOM_ATTRIBUTE_NAME = "bottom";
     private static final String FIT_ATTRIBUTE_NAME = "fit";
-    private static final String TAG = LogTag.TAG;
-    private static final boolean DEBUG = false;
-    private static final boolean LOCAL_LOGV = false;
 
     SmilRegionElementImpl(SmilDocumentImpl owner, String tagName) {
         super(owner, tagName);
@@ -78,9 +74,7 @@ public class SmilRegionElementImpl extends SmilElementImpl implements
         try {
             return parseRegionLength(getAttribute(LEFT_ATTRIBUTE_NAME), true);
         } catch (NumberFormatException e) {
-            if (LOCAL_LOGV) {
-                Log.v(TAG, "Left attribute is not set or incorrect.");
-            }
+            log.log(Level.WARNING, "Left attribute is not set or incorrect.");
         }
         try {
             int bbw = ((SMILDocument) getOwnerDocument()).getLayout().getRootLayout().getWidth();
@@ -88,9 +82,7 @@ public class SmilRegionElementImpl extends SmilElementImpl implements
             int width = parseRegionLength(getAttribute(WIDTH_ATTRIBUTE_NAME), true);
             return bbw - right - width;
         } catch (NumberFormatException e) {
-            if (LOCAL_LOGV) {
-                Log.v(TAG, "Right or width attribute is not set or incorrect.");
-            }
+            log.log(Level.WARNING, "Right or width attribute is not set or incorrect.");
         }
         return 0;
     }
@@ -99,9 +91,7 @@ public class SmilRegionElementImpl extends SmilElementImpl implements
         try {
             return parseRegionLength(getAttribute(TOP_ATTRIBUTE_NAME), false);
         } catch (NumberFormatException e) {
-            if (LOCAL_LOGV) {
-                Log.v(TAG, "Top attribute is not set or incorrect.");
-            }
+            log.log(Level.WARNING, "Top attribute is not set or incorrect.");
         }
         try {
             int bbh = ((SMILDocument) getOwnerDocument()).getLayout().getRootLayout().getHeight();
@@ -109,9 +99,7 @@ public class SmilRegionElementImpl extends SmilElementImpl implements
             int height = parseRegionLength(getAttribute(HEIGHT_ATTRIBUTE_NAME), false);
             return bbh - bottom - height;
         } catch (NumberFormatException e) {
-            if (LOCAL_LOGV) {
-                Log.v(TAG, "Bottom or height attribute is not set or incorrect.");
-            }
+            log.log(Level.WARNING, "Bottom or height attribute is not set or incorrect.");
         }
         return 0;
     }
@@ -162,24 +150,18 @@ public class SmilRegionElementImpl extends SmilElementImpl implements
                     ((SMILDocument) getOwnerDocument()).getLayout().getRootLayout().getHeight() :
                         height;
         } catch (NumberFormatException e) {
-            if (LOCAL_LOGV) {
-                Log.v(TAG, "Height attribute is not set or incorrect.");
-            }
+            log.log(Level.WARNING, "Height attribute is not set or incorrect.");
         }
         int bbh = ((SMILDocument) getOwnerDocument()).getLayout().getRootLayout().getHeight();
         try {
             bbh -= parseRegionLength(getAttribute(TOP_ATTRIBUTE_NAME), false);
         } catch (NumberFormatException e) {
-            if (LOCAL_LOGV) {
-                Log.v(TAG, "Top attribute is not set or incorrect.");
-            }
+            log.log(Level.WARNING, "Top attribute is not set or incorrect.");
         }
         try {
             bbh -= parseRegionLength(getAttribute(BOTTOM_ATTRIBUTE_NAME), false);
         } catch (NumberFormatException e) {
-            if (LOCAL_LOGV) {
-                Log.v(TAG, "Bottom attribute is not set or incorrect.");
-            }
+            log.log(Level.WARNING, "Bottom attribute is not set or incorrect.");
         }
         return bbh;
     }
@@ -195,24 +177,18 @@ public class SmilRegionElementImpl extends SmilElementImpl implements
                     ((SMILDocument) getOwnerDocument()).getLayout().getRootLayout().getWidth() :
                         width;
         } catch (NumberFormatException e) {
-            if (LOCAL_LOGV) {
-                Log.v(TAG, "Width attribute is not set or incorrect.");
-            }
+            log.log(Level.WARNING, "Width attribute is not set or incorrect.");
         }
         int bbw = ((SMILDocument) getOwnerDocument()).getLayout().getRootLayout().getWidth();
         try {
             bbw -= parseRegionLength(getAttribute(LEFT_ATTRIBUTE_NAME), true);
         } catch (NumberFormatException e) {
-            if (LOCAL_LOGV) {
-                Log.v(TAG, "Left attribute is not set or incorrect.");
-            }
+            log.log(Level.WARNING, "Left attribute is not set or incorrect.");
         }
         try {
             bbw -= parseRegionLength(getAttribute(RIGHT_ATTRIBUTE_NAME), true);
         } catch (NumberFormatException e) {
-            if (LOCAL_LOGV) {
-                Log.v(TAG, "Right attribute is not set or incorrect.");
-            }
+            log.log(Level.WARNING, "Right attribute is not set or incorrect.");
         }
         return bbw;
     }
