@@ -321,13 +321,13 @@ public class PduHeaders {
     /**
      * The map contains the value of all headers.
      */
-    private HashMap<Integer, Object> mHeaderMap = null;
+    private HashMap<Integer, Object> mHeaderMap;
 
     /**
      * Constructor of PduHeaders.
      */
     public PduHeaders() {
-        mHeaderMap = new HashMap<Integer, Object>();
+        mHeaderMap = new HashMap<>();
     }
 
     /**

@@ -165,6 +165,11 @@ public class PduComposer {
                     return null;
                 }
                 break;
+            case PduHeaders.MESSAGE_TYPE_RETRIEVE_CONF:
+                if (makeRetrieveConf() != PDU_COMPOSE_SUCCESS) {
+                    return null;
+                }
+                break;
             default:
                 return null;
         }
@@ -801,6 +806,90 @@ public class PduComposer {
 
         // Need at least one of "cc", "bcc" and "to".
         if (false == recipient) {
+            return PDU_COMPOSE_CONTENT_ERROR;
+        }
+
+        // Subject Optional
+        appendHeader(PduHeaders.SUBJECT);
+
+        // X-Mms-Message-Class Optional
+        // Message-class-value = Class-identifier | Token-text
+        appendHeader(PduHeaders.MESSAGE_CLASS);
+
+        // X-Mms-Expiry Optional
+        appendHeader(PduHeaders.EXPIRY);
+
+        // X-Mms-Priority Optional
+        appendHeader(PduHeaders.PRIORITY);
+
+        // X-Mms-Delivery-Report Optional
+        appendHeader(PduHeaders.DELIVERY_REPORT);
+
+        // X-Mms-Read-Report Optional
+        appendHeader(PduHeaders.READ_REPORT);
+
+        //    Content-Type
+        appendOctet(PduHeaders.CONTENT_TYPE);
+
+        //  Message body
+        return makeMessageBody();
+    }
+
+    /**
+     * Make RetrieveConf
+     */
+    private int makeRetrieveConf() {
+        if (mMessage == null) {
+            mMessage = new ByteArrayOutputStream();
+            mPosition = 0;
+        }
+
+        // X-Mms-Message-Type
+        appendOctet(PduHeaders.MESSAGE_TYPE);
+        appendOctet(PduHeaders.MESSAGE_TYPE_RETRIEVE_CONF);
+
+        // X-Mms-Transaction-ID
+        appendOctet(PduHeaders.TRANSACTION_ID);
+
+        byte[] trid = mPduHeader.getTextString(PduHeaders.TRANSACTION_ID);
+        if (trid == null) {
+            // Transaction-ID should be set(by Transaction) before make().
+            throw new IllegalArgumentException("Transaction-ID is null.");
+        }
+        appendTextString(trid);
+
+        //  X-Mms-MMS-Version
+        if (appendHeader(PduHeaders.MMS_VERSION) != PDU_COMPOSE_SUCCESS) {
+            return PDU_COMPOSE_CONTENT_ERROR;
+        }
+
+        // Date Date-value Optional.
+        appendHeader(PduHeaders.DATE);
+
+        // From
+        if (appendHeader(PduHeaders.FROM) != PDU_COMPOSE_SUCCESS) {
+            return PDU_COMPOSE_CONTENT_ERROR;
+        }
+
+        boolean recipient = false;
+
+        // To
+        if (appendHeader(PduHeaders.TO) != PDU_COMPOSE_CONTENT_ERROR) {
+            recipient = true;
+        }
+
+        // Cc
+        if (appendHeader(PduHeaders.CC) != PDU_COMPOSE_CONTENT_ERROR) {
+            recipient = true;
+        }
+
+        // Bcc
+        if (appendHeader(PduHeaders.BCC) != PDU_COMPOSE_CONTENT_ERROR) {
+            recipient = true;
+        }
+
+        // Need at least one of "cc", "bcc" and "to".
+        if (!recipient) {
             return PDU_COMPOSE_CONTENT_ERROR;
         }
 

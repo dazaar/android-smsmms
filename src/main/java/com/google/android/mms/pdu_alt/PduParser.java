@@ -119,6 +119,7 @@ public class PduParser {
         mHeaders = parseHeaders(mPduDataStream);
         if (null == mHeaders) {
             // Parse headers failed.
+            log.warning("Header parsing failed");
             return null;
         }
 
