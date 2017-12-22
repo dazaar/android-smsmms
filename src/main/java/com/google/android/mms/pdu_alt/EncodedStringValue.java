@@ -277,4 +277,9 @@ public class EncodedStringValue implements Cloneable {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        return getString();
+    }
 }
