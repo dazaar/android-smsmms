@@ -170,6 +170,11 @@ public class PduComposer {
                     return null;
                 }
                 break;
+            case PduHeaders.MESSAGE_TYPE_NOTIFICATION_IND:
+                if (makeNotificationInd() != PDU_COMPOSE_SUCCESS) {
+                    return null;
+                }
+                break;
             default:
                 return null;
         }
@@ -571,6 +576,7 @@ public class PduComposer {
                 break;
 
             case PduHeaders.DATE:
+            case PduHeaders.MESSAGE_SIZE:
                 long date = mPduHeader.getLongInteger(field);
                 if (-1 == date) {
                     return PDU_COMPOSE_FIELD_NOT_SET;
@@ -589,6 +595,16 @@ public class PduComposer {
 
                 appendOctet(field);
                 appendEncodedString(enString);
+                break;
+
+            case PduHeaders.CONTENT_LOCATION:
+                byte[] contentString = mPduHeader.getTextString(field);
+                if (null == contentString) {
+                    return PDU_COMPOSE_FIELD_NOT_SET;
+                }
+
+                appendOctet(field);
+                appendTextString(contentString);
                 break;
 
             case PduHeaders.MESSAGE_CLASS:
@@ -917,6 +933,53 @@ public class PduComposer {
 
         //  Message body
         return makeMessageBody();
+    }
+
+    /**
+     * Make Notification.Ind.
+     */
+    private int makeNotificationInd() {
+        if (mMessage == null) {
+            mMessage = new ByteArrayOutputStream();
+            mPosition = 0;
+        }
+
+        //    X-Mms-Message-Type
+        appendOctet(PduHeaders.MESSAGE_TYPE);
+        appendOctet(PduHeaders.MESSAGE_TYPE_NOTIFICATION_IND);
+
+        // X-Mms-Transaction-ID
+        if (appendHeader(PduHeaders.TRANSACTION_ID) != PDU_COMPOSE_SUCCESS) {
+            return PDU_COMPOSE_CONTENT_ERROR;
+        }
+
+        if (appendHeader(PduHeaders.EXPIRY) != PDU_COMPOSE_SUCCESS) {
+            return PDU_COMPOSE_CONTENT_ERROR;
+        }
+
+        if (appendHeader(PduHeaders.MESSAGE_CLASS) != PDU_COMPOSE_SUCCESS) {
+            return PDU_COMPOSE_CONTENT_ERROR;
+        }
+
+        // X-Mms-MMS-Version
+        if (appendHeader(PduHeaders.MMS_VERSION) != PDU_COMPOSE_SUCCESS) {
+            return PDU_COMPOSE_CONTENT_ERROR;
+        }
+
+        if (appendHeader(PduHeaders.MESSAGE_SIZE) != PDU_COMPOSE_SUCCESS) {
+            return PDU_COMPOSE_CONTENT_ERROR;
+        }
+
+        if (appendHeader(PduHeaders.CONTENT_LOCATION) != PDU_COMPOSE_SUCCESS) {
+            return PDU_COMPOSE_CONTENT_ERROR;
+        }
+
+        if (appendHeader(PduHeaders.FROM) != PDU_COMPOSE_SUCCESS) {
+            return PDU_COMPOSE_CONTENT_ERROR;
+        }
+
+        // X-Mms-Report-Allowed Optional (not support)
+        return PDU_COMPOSE_SUCCESS;
     }
 
     /**
