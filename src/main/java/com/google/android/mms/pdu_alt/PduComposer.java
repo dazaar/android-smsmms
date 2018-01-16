@@ -1002,7 +1002,7 @@ public class PduComposer {
         appendShortInteger(contentTypeIdentifier.intValue());
 
         // content-type parameter: start
-        PduBody body = ((RetrieveConf) mPdu).getBody();
+        PduBody body = ((MultimediaMessagePdu) mPdu).getBody();
         if (null == body || body.getPartsNum() == 0) {
             // empty message
             appendUintvarInteger(0);
