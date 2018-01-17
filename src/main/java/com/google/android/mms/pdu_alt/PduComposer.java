@@ -998,7 +998,7 @@ public class PduComposer {
             mPosition = 0;
         }
 
-        //    X-Mms-Message-Type
+        // X-Mms-Message-Type
         appendOctet(PduHeaders.MESSAGE_TYPE);
         appendOctet(PduHeaders.MESSAGE_TYPE_SEND_CONF);
 
@@ -1012,6 +1012,12 @@ public class PduComposer {
             return PDU_COMPOSE_CONTENT_ERROR;
         }
 
+        // Message-ID
+        if (appendHeader(PduHeaders.MESSAGE_ID) != PDU_COMPOSE_SUCCESS) {
+            return PDU_COMPOSE_CONTENT_ERROR;
+        }
+
+        // Response status
         if (appendHeader(PduHeaders.RESPONSE_STATUS) != PDU_COMPOSE_SUCCESS) {
             return PDU_COMPOSE_CONTENT_ERROR;
         }
