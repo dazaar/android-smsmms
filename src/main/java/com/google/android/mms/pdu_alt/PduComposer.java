@@ -175,6 +175,11 @@ public class PduComposer {
                     return null;
                 }
                 break;
+            case PduHeaders.MESSAGE_TYPE_SEND_CONF:
+                if (makeSendConf() != PDU_COMPOSE_SUCCESS) {
+                    return null;
+                }
+                break;
             default:
                 return null;
         }
@@ -566,6 +571,7 @@ public class PduComposer {
             case PduHeaders.PRIORITY:
             case PduHeaders.DELIVERY_REPORT:
             case PduHeaders.READ_REPORT:
+            case PduHeaders.RESPONSE_STATUS:
                 int octet = mPduHeader.getOctet(field);
                 if (0 == octet) {
                     return PDU_COMPOSE_FIELD_NOT_SET;
@@ -587,6 +593,7 @@ public class PduComposer {
                 break;
 
             case PduHeaders.SUBJECT:
+            case PduHeaders.RESPONSE_TEXT:
                 EncodedStringValue enString =
                     mPduHeader.getEncodedStringValue(field);
                 if (null == enString) {
@@ -975,6 +982,41 @@ public class PduComposer {
         }
 
         if (appendHeader(PduHeaders.FROM) != PDU_COMPOSE_SUCCESS) {
+            return PDU_COMPOSE_CONTENT_ERROR;
+        }
+
+        // X-Mms-Report-Allowed Optional (not support)
+        return PDU_COMPOSE_SUCCESS;
+    }
+
+    /**
+     * Make SendConf message
+     */
+    private int makeSendConf() {
+        if (mMessage == null) {
+            mMessage = new ByteArrayOutputStream();
+            mPosition = 0;
+        }
+
+        //    X-Mms-Message-Type
+        appendOctet(PduHeaders.MESSAGE_TYPE);
+        appendOctet(PduHeaders.MESSAGE_TYPE_SEND_CONF);
+
+        // X-Mms-Transaction-ID
+        if (appendHeader(PduHeaders.TRANSACTION_ID) != PDU_COMPOSE_SUCCESS) {
+            return PDU_COMPOSE_CONTENT_ERROR;
+        }
+
+        // X-Mms-MMS-Version
+        if (appendHeader(PduHeaders.MMS_VERSION) != PDU_COMPOSE_SUCCESS) {
+            return PDU_COMPOSE_CONTENT_ERROR;
+        }
+
+        if (appendHeader(PduHeaders.RESPONSE_STATUS) != PDU_COMPOSE_SUCCESS) {
+            return PDU_COMPOSE_CONTENT_ERROR;
+        }
+
+        if (appendHeader(PduHeaders.RESPONSE_TEXT) != PDU_COMPOSE_SUCCESS) {
             return PDU_COMPOSE_CONTENT_ERROR;
         }
 
