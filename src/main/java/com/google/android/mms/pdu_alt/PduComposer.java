@@ -1016,9 +1016,8 @@ public class PduComposer {
             return PDU_COMPOSE_CONTENT_ERROR;
         }
 
-        if (appendHeader(PduHeaders.RESPONSE_TEXT) != PDU_COMPOSE_SUCCESS) {
-            return PDU_COMPOSE_CONTENT_ERROR;
-        }
+        // Response text optional
+        appendHeader(PduHeaders.RESPONSE_TEXT);
 
         // X-Mms-Report-Allowed Optional (not support)
         return PDU_COMPOSE_SUCCESS;
